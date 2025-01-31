@@ -49,7 +49,7 @@ RUN mkdir -p /home/notebook/.ipython/profile_default/security/ && \
     chown notebook:notebook "$CONDA_DIR"
 
 # Install GIS tools and fix SQLite issue directly in the base environment
-RUN mamba install -c conda-forge -y jupytergis qgis pycrdt geopandas sqlite=3.45 && \
+RUN mamba install -c conda-forge -y escapism jupytergis qgis pycrdt geopandas sqlite=3.45 && \
     mamba clean --all -y
 
 # Install environment_kernels to manage kernels in different environments
