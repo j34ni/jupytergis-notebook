@@ -6,7 +6,7 @@ USER root
 # Setup ENV for Appstore to be picked up
 ENV APP_UID=999 \
     APP_GID=999 \
-    PKG_JUPYTER_NOTEBOOK_VERSION=7.3.2
+    PKG_JUPYTER_LAB_VERSION=4.3.5
 
 # Create a dedicated user for Jupyter
 RUN groupadd -g "$APP_GID" notebook && \
@@ -48,14 +48,13 @@ RUN mkdir -p /home/notebook/.ipython/profile_default/security/ && \
     chmod go+rwx "$CONDA_DIR/.condatmp" && \
     chown notebook:notebook "$CONDA_DIR"
 
-# Copy environment file
-COPY environment.yml .
-# Update the base environment with the environment file
-RUN conda env update -n base -f environment.yml && \
-    conda clean --all -y
+# Copy the environment.yaml file into the container
+COPY environment.yaml /tmp/environment.yaml
 
-# Install environment_kernels to manage kernels in different environments
-RUN mamba install -c conda-forge -y nb_conda_kernels
+# Install packages from environment.yaml directly into the base environment
+RUN mamba env update -n base -f /tmp/environment.yaml && \
+    mamba clean --all -y && \
+    rm /tmp/environment.yaml
 
 # Configure Jupyter to use nb_conda_kernels
 RUN mkdir -p /home/notebook/.jupyter && \
@@ -67,4 +66,6 @@ RUN mkdir -p /home/notebook/.jupyter && \
 # Ensure Conda is configured for the notebook user
 USER notebook
 WORKDIR $HOME
+
+# Set the command to run the start-notebook.sh script
 CMD ["/usr/local/bin/start-notebook.sh"]

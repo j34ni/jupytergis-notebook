@@ -2,11 +2,11 @@ name: base
 channels:
   - conda-forge
 dependencies:
-  - escapism 
-  - geopandas 
-  - jupytergis==0.2.0
+  - escapism
+  - geopandas
+  - jupytergis=0.2.0
   - nb_conda_kernels
-  - pycrdt 
+  - pycrdt
   - python=3.11.6
-  - qgis 
+  - qgis
   - sqlite=3.45
