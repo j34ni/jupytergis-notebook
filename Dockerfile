@@ -48,9 +48,6 @@ RUN mkdir -p /home/notebook/.ipython/profile_default/security/ && \
     chmod go+rwx "$CONDA_DIR/.condatmp" && \
     chown notebook:notebook "$CONDA_DIR"
 
-# Install Mamba for faster environment solving
-RUN conda install -n base -c conda-forge mamba -y
-
 # Install GIS tools and fix SQLite issue directly in the base environment
 RUN mamba install -c conda-forge -y jupytergis qgis pycrdt geopandas sqlite=3.45 && \
     mamba clean --all -y
@@ -60,11 +57,12 @@ RUN mamba install -c conda-forge -y nb_conda_kernels
 
 # Configure Jupyter to use nb_conda_kernels
 RUN mkdir -p /home/notebook/.jupyter && \
-    touch /home/notebook/.jupyter/jupyter_notebook_config.py && \
-    echo "c.NotebookApp.kernel_spec_manager_class = 'nb_conda_kernels.CondaKernelSpecManager'" >> /home/notebook/.jupyter/jupyter_notebook_config.py && \
+    touch /home/notebook/.jupyter/jupyter_server_config.py && \
+    echo "c.NotebookApp.kernel_spec_manager_class = 'nb_conda_kernels.CondaKernelSpecManager'" >> /home/notebook/.jupyter/jupyter_server_config.py && \
     chown -R notebook:notebook /home/notebook/.jupyter && \
     chmod -R 775 /home/notebook/.jupyter
 
+# Ensure Conda is configured for the notebook user
 USER notebook
 WORKDIR $HOME
-CMD ["jupyter-lab", "--notebook-dir=/home/notebook/work"]
+CMD ["/usr/local/bin/start-notebook.sh"]
