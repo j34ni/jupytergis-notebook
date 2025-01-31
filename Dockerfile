@@ -48,13 +48,17 @@ RUN mkdir -p /home/notebook/.ipython/profile_default/security/ && \
     chmod go+rwx "$CONDA_DIR/.condatmp" && \
     chown notebook:notebook "$CONDA_DIR"
 
-# Copy the environment.yaml file into the container
-COPY environment.yaml /tmp/environment.yaml
-
-# Install packages from environment.yaml directly into the base environment
-RUN mamba env update -n base -f /tmp/environment.yaml && \
-    mamba clean --all -y && \
-    rm /tmp/environment.yaml
+# Install all GIS tools and necessary packages directly into the base environment
+RUN mamba install -c conda-forge -y \
+    escapism \
+    geopandas \
+    jupytergis=0.2.0 \
+    nb_conda_kernels \
+    pycrdt \
+    python=3.11 \
+    qgis \
+    sqlite=3.45 && \
+    mamba clean --all -y
 
 # Configure Jupyter to use nb_conda_kernels
 RUN mkdir -p /home/notebook/.jupyter && \
