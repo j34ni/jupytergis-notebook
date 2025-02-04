@@ -1,3 +1,4 @@
+# This is the important one.
 import os
 
 CORS_ORIGIN = '*'
@@ -12,14 +13,14 @@ headers = {
     'Content-Security-Policy':
         "; ".join([
             f"default-src 'self' https: {CORS_ORIGIN}",
-            f"img-src 'self' data: {CORS_ORIGIN}",
+            f"img-src 'self' data: *",
             f"connect-src 'self' wss://{CORS_ORIGIN_HOSTNAME}",
             f"style-src 'unsafe-inline' 'self' {CORS_ORIGIN}",
             f"script-src https: 'unsafe-inline' 'unsafe-eval' 'self' {CORS_ORIGIN}"
         ])
 }
 
-# Configuration file for lab.
+# Configuration file for notebook.
 
 c = get_config()  #noqa
 
@@ -423,276 +424,201 @@ c = get_config()  #noqa
 # c.LabServerApp.workspaces_dir = ''
 
 #------------------------------------------------------------------------------
-# LabApp(LabServerApp) configuration
+# JupyterNotebookApp(LabServerApp) configuration
 #------------------------------------------------------------------------------
+## The notebook server extension app.
+
 ## 
 #  See also: LabServerApp.allowed_extensions_uris
-# c.LabApp.allowed_extensions_uris = ''
+# c.JupyterNotebookApp.allowed_extensions_uris = ''
 
 ## Answer yes to any prompts.
 #  See also: JupyterApp.answer_yes
-# c.LabApp.answer_yes = False
-
-## The app directory to launch JupyterLab from.
-#  Default: None
-# c.LabApp.app_dir = None
+# c.JupyterNotebookApp.answer_yes = False
 
 ## The application settings directory.
 #  Default: ''
-# c.LabApp.app_settings_dir = ''
+# c.JupyterNotebookApp.app_settings_dir = ''
 
 ## The url path for the application.
 #  Default: '/lab'
-# c.LabApp.app_url = '/lab'
+# c.JupyterNotebookApp.app_url = '/lab'
 
 ## Deprecated, use `LabServerApp.blocked_extensions_uris`
 #  See also: LabServerApp.blacklist_uris
-# c.LabApp.blacklist_uris = ''
+# c.JupyterNotebookApp.blacklist_uris = ''
 
 ## 
 #  See also: LabServerApp.blocked_extensions_uris
-# c.LabApp.blocked_extensions_uris = ''
+# c.JupyterNotebookApp.blocked_extensions_uris = ''
 
 ## Whether to cache files on the server. This should be `True` except in dev
 #  mode.
 #  Default: True
-# c.LabApp.cache_files = True
-
-## A callable class that receives the current version at instantiation and
-#  calling it must return asynchronously a string indicating which version is
-#  available and how to install or None if no update is available. The string
-#  supports Markdown format.
-#  Default: 'jupyterlab.handlers.announcements.CheckForUpdate'
-# c.LabApp.check_for_updates_class = 'jupyterlab.handlers.announcements.CheckForUpdate'
-
-## To enable real-time collaboration, you must install the extension `jupyter_collaboration`.
-#          You can install it using pip for example:
-#  
-#              python -m pip install jupyter_collaboration
-#  
-#          This flag is now deprecated and will be removed in JupyterLab v5.
-#  Default: False
-# c.LabApp.collaborative = False
+# c.JupyterNotebookApp.cache_files = True
 
 ## Full path of a config file.
 #  See also: JupyterApp.config_file
-# c.LabApp.config_file = ''
+# c.JupyterNotebookApp.config_file = ''
 
 ## Specify a config file to load.
 #  See also: JupyterApp.config_file_name
-# c.LabApp.config_file_name = ''
+# c.JupyterNotebookApp.config_file_name = ''
 
 ## Whether getting a relative (False) or absolute (True) path when copying a
 #  path.
 #  Default: False
-# c.LabApp.copy_absolute_path = False
-
-## Whether to start the app in core mode. In this mode, JupyterLab
-#          will run using the JavaScript assets that are within the installed
-#          JupyterLab Python package. In core mode, third party extensions are disabled.
-#          The `--dev-mode` flag is an alias to this to be used when the Python package
-#          itself is installed in development mode (`pip install -e .`).
-#  Default: False
-# c.LabApp.core_mode = False
+# c.JupyterNotebookApp.copy_absolute_path = False
 
 ## Whether custom CSS is loaded on the page.
-#      Defaults to False.
-#  Default: False
-# c.LabApp.custom_css = False
+#          Defaults to True and custom CSS is loaded.
+#  Default: True
+# c.JupyterNotebookApp.custom_css = True
 
 ## The default URL to redirect to from `/`
-#  Default: '/lab'
-# c.LabApp.default_url = '/lab'
-
-## Whether to start the app in dev mode. Uses the unpublished local
-#          JavaScript packages in the `dev_mode` folder.  In this case JupyterLab will
-#          show a red stripe at the top of the page.  It can only be used if JupyterLab
-#          is installed as `pip install -e .`.
-#  Default: False
-# c.LabApp.dev_mode = False
+#  Default: '/tree'
+# c.JupyterNotebookApp.default_url = '/tree'
 
 ## Whether to expose the global app instance to browser via window.jupyterapp
 #  Default: False
-# c.LabApp.expose_app_in_browser = False
-
-## The extension manager factory to use. The default options are:
-#          "readonly" for a manager without installation capability or "pypi" for
-#          a manager using PyPi.org and pip to install extensions.
-#  Default: 'pypi'
-# c.LabApp.extension_manager = 'pypi'
-
-## Whether to load prebuilt extensions in dev mode. This may be
-#          useful to run and test prebuilt extensions in development installs of
-#          JupyterLab. APIs in a JupyterLab development install may be
-#          incompatible with published packages, so prebuilt extensions compiled
-#          against published packages may not work correctly.
-#  Default: False
-# c.LabApp.extensions_in_dev_mode = False
+# c.JupyterNotebookApp.expose_app_in_browser = False
 
 ## Extra paths to look for federated JupyterLab extensions
 #  Default: []
-# c.LabApp.extra_labextensions_path = []
+# c.JupyterNotebookApp.extra_labextensions_path = []
 
 ## Generate default config file.
 #  See also: JupyterApp.generate_config
-# c.LabApp.generate_config = False
+# c.JupyterNotebookApp.generate_config = False
 
 ## Handlers appended to the server.
 #  See also: ExtensionApp.handlers
-# c.LabApp.handlers = []
+# c.JupyterNotebookApp.handlers = []
 
 ## Options to pass to the jinja2 environment for this
 #  Default: {}
-# c.LabApp.jinja2_options = {}
+# c.JupyterNotebookApp.jinja2_options = {}
 
 ## The standard paths to look in for federated JupyterLab extensions
 #  Default: []
-# c.LabApp.labextensions_path = []
+# c.JupyterNotebookApp.labextensions_path = []
 
 ## The url for federated JupyterLab extensions
 #  Default: ''
-# c.LabApp.labextensions_url = ''
+# c.JupyterNotebookApp.labextensions_url = ''
 
 ## The interval delay in seconds to refresh the lists
 #  See also: LabServerApp.listings_refresh_seconds
-# c.LabApp.listings_refresh_seconds = 3600
+# c.JupyterNotebookApp.listings_refresh_seconds = 3600
 
 ## The optional kwargs to use for the listings HTTP requests             as
 #  described on https://2.python-requests.org/en/v2.7.0/api/#requests.request
 #  See also: LabServerApp.listings_request_options
-# c.LabApp.listings_request_options = {}
+# c.JupyterNotebookApp.listings_request_options = {}
 
 ## The listings url.
 #  Default: ''
-# c.LabApp.listings_url = ''
-
-## Whether all plugins are locked (cannot be enabled/disabled from the UI)
-#  Default: False
-# c.LabApp.lock_all_plugins = False
+# c.JupyterNotebookApp.listings_url = ''
 
 ## The date format used by logging formatters for %(asctime)s
 #  See also: Application.log_datefmt
-# c.LabApp.log_datefmt = '%Y-%m-%d %H:%M:%S'
+# c.JupyterNotebookApp.log_datefmt = '%Y-%m-%d %H:%M:%S'
 
 ## The Logging format template
 #  See also: Application.log_format
-# c.LabApp.log_format = '[%(name)s]%(highlevel)s %(message)s'
+# c.JupyterNotebookApp.log_format = '[%(name)s]%(highlevel)s %(message)s'
 
 ## Set the log level by value or name.
 #  See also: Application.log_level
-# c.LabApp.log_level = 30
+# c.JupyterNotebookApp.log_level = 30
 
 ## 
 #  See also: Application.logging_config
-# c.LabApp.logging_config = {}
-
-## URL that serves news Atom feed; by default the JupyterLab organization
-#  announcements will be fetched. Set to None to turn off fetching announcements.
-#  Default: 'https://jupyterlab.github.io/assets/feed.xml'
-# c.LabApp.news_url = 'https://jupyterlab.github.io/assets/feed.xml'
+# c.JupyterNotebookApp.logging_config = {}
 
 ## Whether a notebook should start a kernel automatically.
 #  Default: True
-# c.LabApp.notebook_starts_kernel = True
+# c.JupyterNotebookApp.notebook_starts_kernel = True
 
 ## Whether to open in a browser after starting.
 #  See also: ExtensionApp.open_browser
-# c.LabApp.open_browser = False
-
-## The override url for static lab assets, typically a CDN.
-#  Default: ''
-# c.LabApp.override_static_url = ''
-
-## The override url for static lab theme assets, typically a CDN.
-#  Default: ''
-# c.LabApp.override_theme_url = ''
+# c.JupyterNotebookApp.open_browser = False
 
 ## The optional location of the settings schemas directory. If given, a handler
 #  will be added for settings.
 #  Default: ''
-# c.LabApp.schemas_dir = ''
+# c.JupyterNotebookApp.schemas_dir = ''
 
 ## Settings that will passed to the server.
 #  See also: ExtensionApp.settings
-# c.LabApp.settings = {}
+# c.JupyterNotebookApp.settings = {}
 
 ## The url path of the settings handler.
 #  Default: ''
-# c.LabApp.settings_url = ''
+# c.JupyterNotebookApp.settings_url = ''
 
 ## Instead of starting the Application, dump configuration to stdout
 #  See also: Application.show_config
-# c.LabApp.show_config = False
+# c.JupyterNotebookApp.show_config = False
 
 ## Instead of starting the Application, dump configuration to stdout (as JSON)
 #  See also: Application.show_config_json
-# c.LabApp.show_config_json = False
-
-## Whether to skip the initial install and JS build of the app in dev mode
-#  Default: False
-# c.LabApp.skip_dev_build = False
-
-## Splice source packages into app directory.
-#  Default: False
-# c.LabApp.splice_source = False
+# c.JupyterNotebookApp.show_config_json = False
 
 ## The optional location of local static files. If given, a static file handler
 #  will be added.
 #  Default: ''
-# c.LabApp.static_dir = ''
+# c.JupyterNotebookApp.static_dir = ''
 
 ## paths to search for serving static files.
 #  See also: ExtensionApp.static_paths
-# c.LabApp.static_paths = []
+# c.JupyterNotebookApp.static_paths = []
 
 ## Url where the static assets for the extension are served.
 #  See also: ExtensionApp.static_url_prefix
-# c.LabApp.static_url_prefix = ''
+# c.JupyterNotebookApp.static_url_prefix = ''
 
 ## Paths to search for serving jinja templates.
 #  See also: ExtensionApp.template_paths
-# c.LabApp.template_paths = []
+# c.JupyterNotebookApp.template_paths = []
 
 ## The application templates directory.
 #  Default: ''
-# c.LabApp.templates_dir = ''
+# c.JupyterNotebookApp.templates_dir = ''
 
 ## The optional location of the themes directory. If given, a handler will be
 #  added for themes.
 #  Default: ''
-# c.LabApp.themes_dir = ''
+# c.JupyterNotebookApp.themes_dir = ''
 
 ## The theme url.
 #  Default: ''
-# c.LabApp.themes_url = ''
+# c.JupyterNotebookApp.themes_url = ''
 
 ## The url path of the translations handler.
 #  Default: ''
-# c.LabApp.translations_api_url = ''
+# c.JupyterNotebookApp.translations_api_url = ''
 
 ## The url path of the tree handler.
 #  Default: ''
-# c.LabApp.tree_url = ''
+# c.JupyterNotebookApp.tree_url = ''
 
-## The directory for user settings.
-#  Default: '/home/jovyan/.jupyter/lab/user-settings'
-# c.LabApp.user_settings_dir = '/home/jovyan/.jupyter/lab/user-settings'
-
-## Whether to serve the app in watch mode
-#  Default: False
-# c.LabApp.watch = False
+## The optional location of the user settings directory.
+#  Default: ''
+# c.JupyterNotebookApp.user_settings_dir = ''
 
 ## Deprecated, use `LabServerApp.allowed_extensions_uris`
 #  See also: LabServerApp.whitelist_uris
-# c.LabApp.whitelist_uris = ''
+# c.JupyterNotebookApp.whitelist_uris = ''
 
 ## The url path of the workspaces API.
 #  Default: ''
-# c.LabApp.workspaces_api_url = ''
+# c.JupyterNotebookApp.workspaces_api_url = ''
 
-## The directory for workspaces
-#  Default: '/home/jovyan/.jupyter/lab/workspaces'
-# c.LabApp.workspaces_dir = '/home/jovyan/.jupyter/lab/workspaces'
+## The optional location of the saved workspaces directory. If given, a handler
+#  will be added for workspaces.
+#  Default: ''
+# c.JupyterNotebookApp.workspaces_dir = ''
 
 #------------------------------------------------------------------------------
 # ServerApp(JupyterApp) configuration
@@ -1135,7 +1061,8 @@ c.ServerApp.ip = '0.0.0.0'
 
 ## DEPRECATED. Use IdentityProvider.token
 #  Default: '<DEPRECATED>'
-# c.ServerApp.token = '<DEPRECATED>'
+c.ServerApp.token = ""
+c.ServerApp.password = ""
 
 ## Supply overrides for the tornado.web.Application that the Jupyter server uses.
 #  Default: {}

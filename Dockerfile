@@ -38,9 +38,8 @@ ENV HOME=/home/notebook \
 
 # Copy scripts and configurations
 COPY normalize-username.py /usr/local/bin/
-COPY start-lab.sh /usr/local/bin/
+COPY start-notebook.sh /usr/local/bin/
 COPY --chown=notebook:notebook .jupyter/ /opt/.jupyter/
-COPY --chown=notebook:notebook jupyter_lab_config.py /opt/.jupyter/
 
 # Set up directories and permissions
 RUN mkdir -p /home/notebook/.ipython/profile_default/security/ && \
@@ -53,7 +52,7 @@ RUN mkdir -p /home/notebook/.ipython/profile_default/security/ && \
     mkdir -p "$CONDA_DIR/.condatmp" && \
     chmod go+rwx "$CONDA_DIR/.condatmp" && \
     chown notebook:notebook "$CONDA_DIR" && \
-    chmod ugo+x /usr/local/bin/start-lab.sh
+    chmod ugo+x /usr/local/bin/start-notebook.sh
 
 # Install GIS tools and fix SQLite issue directly in the base environment
 RUN mamba install -c conda-forge -y \
@@ -70,4 +69,4 @@ RUN mamba install -c conda-forge -y \
 # Ensure Conda is configured for the notebook user
 USER notebook
 WORKDIR $HOME
-CMD ["/usr/local/bin/start-lab.sh"]
+CMD ["/usr/local/bin/start-notebook.sh"]
