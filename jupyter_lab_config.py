@@ -1,12 +1,11 @@
 import os
 
-# Set default CORS_ORIGIN if not provided
-CORS_ORIGIN = os.environ.get('CORS_ORIGIN', '*')
-# Determine CORS_ORIGIN_HOSTNAME based on CORS_ORIGIN
-if '://' in CORS_ORIGIN:
+CORS_ORIGIN = '*'
+CORS_ORIGIN_HOSTNAME = '*'
+
+if os.environ['CORS_ORIGIN'] != 'none':
+    CORS_ORIGIN = os.environ.get('CORS_ORIGIN', '')
     CORS_ORIGIN_HOSTNAME = CORS_ORIGIN.split('://')[1]
-else:
-    CORS_ORIGIN_HOSTNAME = CORS_ORIGIN
 
 headers = {
     'X-Frame-Options': 'ALLOWALL',
