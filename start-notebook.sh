@@ -14,9 +14,8 @@ HOME=$(eval echo "$HOME")
 JUPYTERHUB_USER=$REAL_JUPYTERHUB_USER # Swich back after expanding, as Jupyterhub breaks otherwise.
 
 mkdir -p "$HOME"
-#mv /home/notebook /home
-ls -lrta /home/notebook
-ln -s "$HOME" /home/notebook
+#mv /home/notebook /home/oldnotebook
+#ln -s "$HOME" /home/notebook
 
 # Exec the specified command or fall back on bash
 if [ $# -eq 0 ]; then
@@ -54,6 +53,10 @@ if [ -d "/mnt" ]; then
     done
 fi
 
-cd "$HOME"
 
-jupyter-lab --config "$HOME/.jupyter/jupyter_lab_config.py"
+cd "$HOME"
+if [[ ! -z "${JUPYTER_ENABLE_LAB}" ]]; then
+  jupyterhub-singleuser --config "$HOME/.jupyter/jupyter_lab_config.py" --SingleUserLabApp.default_url="/lab"
+else
+  jupyterhub-singleuser --config "$HOME/.jupyter/jupyter_lab_config.py" --SingleUserLabApp.default_url="/tree"
+fi
