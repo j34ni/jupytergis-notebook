@@ -14,7 +14,8 @@ HOME=$(eval echo "$HOME")
 JUPYTERHUB_USER=$REAL_JUPYTERHUB_USER # Swich back after expanding, as Jupyterhub breaks otherwise.
 
 mkdir -p "$HOME"
-#mv /home/notebook /home/oldnotebook
+#mv /home/notebook /home
+ls -lrta /home/notebook
 ln -s "$HOME" /home/notebook
 
 # Exec the specified command or fall back on bash
@@ -52,7 +53,6 @@ if [ -d "/mnt" ]; then
       fi
     done
 fi
-
 
 cd "$HOME"
 
