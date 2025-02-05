@@ -21,18 +21,18 @@ headers = {
 
 c = get_config()
 
-c.ServerApp.allow_credentials = True
-c.ServerApp.allow_origin = '*'
-c.ServerApp.allow_root = True
-c.ServerApp.base_url = '%s/' % os.environ.get('PROXY_PREFIX', '')
+c.IPKernelApp.pylab = 'inline'
+c.ServerApp.ip = '*'
+#c.ServerApp.quit_button = False
 c.ServerApp.ip = '0.0.0.0'
-c.ServerApp.token = ""
-c.ServerApp.password = ""
-c.ServerApp.tornado_settings = {
-    'static_url_prefix': '%s/static/' % os.environ.get('PROXY_PREFIX', ''),
-    'headers': headers,
-}
+c.ServerApp.port = 8888
+c.ServerApp.notebook_dir = os.environ['HOME']
+c.ServerApp.allow_origin = '*'
+c.ServerApp.allow_remote_access = True
+c.ServerApp.token = ''
+c.ServerApp.password = ''
+# Run all nodes interactively
+c.InteractiveShell.ast_node_interactivity = "all"
 
-if os.environ.get('NOTEBOOK_PASSWORD', 'none') != 'none':
-    c.NotebookApp.password = os.environ['NOTEBOOK_PASSWORD']
-    del os.environ['NOTEBOOK_PASSWORD']
+c.ServerApp.allow_credentials = True
+c.ServerApp.allow_root = True
