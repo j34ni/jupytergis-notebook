@@ -34,8 +34,8 @@ if [ -f "/tmp/ipcontroller-client.json" ]; then
   cp "/tmp/ipcontroller-client.json" "$HOME/.ipython/profile_default/security/" || true
 fi
 
-if [ ! -f "$HOME/.jupyter/jupyter_server_config.py" ]; then
-	cp -r "/opt/.jupyter/jupyter_server_config.py" "$HOME/.jupyter"
+if [ ! -f "$HOME/.jupyter/jupyter_lab_config.py" ]; then
+	cp -r "/opt/.jupyter/jupyter_lab_config.py" "$HOME/.jupyter"
 fi
 
 # If we have shared data directories mounted, make the folders available in the users home directory.
@@ -55,8 +55,5 @@ fi
 
 
 cd "$HOME"
-if [[ ! -z "${JUPYTER_ENABLE_LAB}" ]]; then
-  jupyterhub-singleuser --config "$HOME/.jupyter/jupyter_server_config.py" --SingleUserLabApp.default_url="/lab"
-else
-  jupyterhub-singleuser --config "$HOME/.jupyter/jupyter_server_config.py" --SingleUserLabApp.default_url="/tree"
-fi
+
+jupyter-lab --config "$HOME/.jupyter/jupyter_lab_config.py"
