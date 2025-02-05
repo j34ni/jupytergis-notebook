@@ -1,5 +1,4 @@
 import os
-# Configuration file for ipython-notebook.
 
 CORS_ORIGIN = '*'
 CORS_ORIGIN_HOSTNAME = '*'
@@ -19,20 +18,21 @@ headers = {
             f"script-src https: 'unsafe-inline' 'unsafe-eval' 'self' {CORS_ORIGIN}"
         ])
 }
+
 c = get_config()
 
-# ------------------------------------------------------------------------------
-# ServerApp configuration
-# ------------------------------------------------------------------------------
-
-c.IPKernelApp.pylab = 'inline'
-c.ServerApp.ip = '*'
-c.ServerApp.quit_button = False
-c.ServerApp.port = 8888
-c.ServerApp.notebook_dir = os.environ['HOME']
+c.ServerApp.allow_credentials = True
 c.ServerApp.allow_origin = '*'
-c.ServerApp.allow_remote_access = True
-c.ServerApp.token = ''
-c.ServerApp.password = ''
-# Run all nodes interactively
-c.InteractiveShell.ast_node_interactivity = "all"
+c.ServerApp.allow_root = True
+c.ServerApp.base_url = '%s/' % os.environ.get('PROXY_PREFIX', '')
+c.ServerApp.ip = '0.0.0.0'
+c.ServerApp.token = ""
+c.ServerApp.password = ""
+c.ServerApp.tornado_settings = {
+    'static_url_prefix': '%s/static/' % os.environ.get('PROXY_PREFIX', ''),
+    'headers': headers,
+}
+
+if os.environ.get('NOTEBOOK_PASSWORD', 'none') != 'none':
+    c.NotebookApp.password = os.environ['NOTEBOOK_PASSWORD']
+    del os.environ['NOTEBOOK_PASSWORD']
