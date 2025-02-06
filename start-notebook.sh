@@ -24,9 +24,9 @@ else
     cmd=$*
 fi
 
-if [ ! -d "$HOME/.jupyter" ]; then
-	cp -r "/opt/.jupyter" "$HOME/.jupyter"
-fi
+#if [ ! -d "$HOME/.jupyter" ]; then
+#    cp -r "/opt/.jupyter" "$HOME/.jupyter"
+#fi
 
 if [ -f "/tmp/ipcontroller-client.json" ]; then
   mkdir -p "$HOME/.ipython/profile_default/security/"
@@ -56,7 +56,7 @@ fi
 
 cd "$HOME"
 if [[ ! -z "${JUPYTER_ENABLE_LAB}" ]]; then
-  jupyterhub-singleuser --config "$HOME/.jupyter/jupyter_lab_config.py" --SingleUserLabApp.default_url="/lab"
+  jupyterhub-singleuser --config "/opt/.jupyter/jupyter_lab_config.py" --SingleUserLabApp.default_url="/lab"
 else
-  jupyterhub-singleuser --config "$HOME/.jupyter/jupyter_lab_config.py" --SingleUserLabApp.default_url="/tree"
+  jupyterhub-singleuser --config "/opt/.jupyter/jupyter_lab_config.py" --SingleUserLabApp.default_url="/tree"
 fi
