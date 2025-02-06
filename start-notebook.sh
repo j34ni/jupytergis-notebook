@@ -14,7 +14,7 @@ HOME=$(eval echo "$HOME")
 JUPYTERHUB_USER=$REAL_JUPYTERHUB_USER # Swich back after expanding, as Jupyterhub breaks otherwise.
 
 mkdir -p "$HOME"/.jupyter
-cp -r "/opt/.jupyter" "$HOME"/.jupyter
+cp -a "/opt/.jupyter/." "$HOME"/.jupyter
 
 # Exec the specified command or fall back on bash
 if [ $# -eq 0 ]; then
