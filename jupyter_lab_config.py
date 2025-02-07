@@ -32,3 +32,10 @@ c.ServerApp.tornado_settings = {
     'static_url_prefix': '%s/static/' % os.environ.get('PROXY_PREFIX', ''),
     'headers': headers,
 }
+
+c.ServerApp.open_browser = False
+c.ServerApp.quit_button = False
+c.ServerApp.port = 8888
+c.ServerApp.root_dir = '/home/notebook'
+c.ServerApp.allow_remote_access = True
+c.InteractiveShell.ast_node_interactivity = "all"
