@@ -26,7 +26,8 @@ ENV TZ="Europe/Oslo"
 
 # Minimal setup for Jupyter environment
 ENV HOME=/home/notebook \
-    XDG_CACHE_HOME=/home/notebook/.cache/
+    XDG_CACHE_HOME=/home/notebook/.cache/ \
+    CORS_ORIGIN='http://localhost'
 
 # Copy scripts and configurations
 COPY normalize-username.py /usr/local/bin/
