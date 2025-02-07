@@ -55,7 +55,7 @@ RUN echo '#!/bin/bash\n\
 set -e\n\
 . /opt/conda/etc/profile.d/conda.sh\n\
 conda activate\n\
-jupyter lab --ip 0.0.0.0 --port 6789 --config "$HOME/jupyter_lab_config.py"' > $HOME/start-notebook.sh \
+jupyter lab --ip 0.0.0.0 --port 8888 --config "$HOME/jupyter_lab_config.py"' > $HOME/start-notebook.sh \
     && chmod +x /home/notebook/start-notebook.sh
 
 # Set the default command to run the script 
