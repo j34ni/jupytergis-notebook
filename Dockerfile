@@ -45,18 +45,18 @@ RUN . /opt/conda/etc/profile.d/conda.sh && conda activate && \
     sqlite=3.45 && \
     mamba clean --all -y
 
-# Ensure Conda is configured for the notebook user
-USER notebook
-WORKDIR $HOME
 COPY jupyter_lab_config.py $HOME/
 
-# Create the script in the notebook user's home directory
+# Create the script in the notebook
 RUN echo '#!/bin/bash\n\
 set -e\n\
 . /opt/conda/etc/profile.d/conda.sh\n\
 conda activate\n\
-jupyter lab --config "$HOME/jupyter_lab_config.py"' > $HOME/start-notebook.sh \
-    && chmod +x /home/notebook/start-notebook.sh
+jupyter lab --config "$HOME/jupyter_lab_config.py"' > /usr/local/bin/start-notebook.sh \
+    && chmod ugo+rwx /usr/local/bin/start-notebook.sh
+
+USER notebook
+WORKDIR $HOME
 
 # Set the default command to run the script 
-CMD ["./start-notebook.sh"]
+CMD ["/usr/local/bin/start-notebook.sh"]
