@@ -1,16 +1,7 @@
-FROM ubuntu:22.04
+FROM jupyter/base-notebook:x86_64-ubuntu-22.04
 
-LABEL maintainer="jeani@nris.no"
+LABEL maintainer="contact@sigma2.no"
 USER root
-
-# Install basic packages
-RUN apt update -y && \
-    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends tzdata wget && \
-    apt clean
-
-# Install Miniforge3
-RUN wget -q -nc --no-check-certificate -P /var/tmp https://github.com/conda-forge/miniforge/releases/download/24.9.2-0/Miniforge3-24.9.2-0-Linux-x86_64.sh && \
-    bash /var/tmp/Miniforge3-24.9.2-0-Linux-x86_64.sh -b -p /opt/conda
 
 # Setup ENV for Appstore to be picked up
 ENV APP_UID=999 \
@@ -22,42 +13,63 @@ RUN groupadd -g "$APP_GID" notebook && \
     useradd -m -s /bin/bash -N -u "$APP_UID" -g notebook notebook && \
     usermod -G users notebook && chmod go+rwx -R "$CONDA_DIR/bin"
 
+# Install basic system utilities and necessary packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssh-client \
+    curl \
+    less \
+    net-tools \
+    screen \
+    tzdata \
+    vim \
+    ca-certificates \
+    sudo && \
+    apt-get -y autoremove && \
+    apt-get -y clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    ln -sf /usr/share/zoneinfo/Europe/Oslo /etc/localtime
+
 ENV TZ="Europe/Oslo"
 
 # Minimal setup for Jupyter environment
 ENV HOME=/home/notebook \
-    XDG_CACHE_HOME=/home/notebook/.cache/ \
-    CORS_ORIGIN='http://localhost'
+    XDG_CACHE_HOME=/home/notebook/.cache/
+COPY normalize-username.py start-notebook.sh /usr/local/bin/
+COPY --chown=notebook:notebook .jupyter/ /opt/.jupyter/
 
-# Copy scripts and configurations
-COPY normalize-username.py /usr/local/bin/
+# Set up directories and permissions
+RUN mkdir -p /home/notebook/.ipython/profile_default/security/ && \
+    mkdir -p /home/notebook/work && \
+    chown -R notebook:notebook "$CONDA_DIR/bin" "$HOME" /home/notebook/work && \
+    chmod -R 777 /home/notebook/work && \
+    chmod go+rwx -R "$CONDA_DIR/bin" && \
+    chmod -R 775 /home/notebook/.ipython && \
+    mkdir -p "$CONDA_DIR/.condatmp" && \
+    chmod go+rwx "$CONDA_DIR/.condatmp" && \
+    chown notebook:notebook "$CONDA_DIR"
 
-# Install GIS tools and fix SQLite issue directly in the base environment
-RUN . /opt/conda/etc/profile.d/conda.sh && conda activate && \
-    mamba install -c conda-forge -y \
+# Install all GIS tools and necessary packages directly into the base environment
+RUN mamba install -c conda-forge -y \
     escapism \
     geopandas \
     jupytergis=0.2.0 \
-    jupyterhub==4.* \
     nb_conda_kernels \
-    notebook \
     pycrdt \
+    python=3.11 \
     qgis \
     sqlite=3.45 && \
     mamba clean --all -y
 
-COPY jupyter_lab_config.py $HOME/
+# Configure Jupyter to use nb_conda_kernels
+RUN mkdir -p /home/notebook/.jupyter && \
+    touch /home/notebook/.jupyter/jupyter_server_config.py && \
+    echo "c.NotebookApp.kernel_spec_manager_class = 'nb_conda_kernels.CondaKernelSpecManager'" >> /home/notebook/.jupyter/jupyter_server_config.py && \
+    chown -R notebook:notebook /home/notebook/.jupyter && \
+    chmod -R 775 /home/notebook/.jupyter
 
-# Create the script in the notebook
-RUN echo '#!/bin/bash\n\
-set -e\n\
-. /opt/conda/etc/profile.d/conda.sh\n\
-conda activate\n\
-jupyter lab --config "$HOME/jupyter_lab_config.py"' > /usr/local/bin/start-notebook.sh \
-    && chmod ugo+rwx /usr/local/bin/start-notebook.sh
-
+# Ensure Conda is configured for the notebook user
 USER notebook
 WORKDIR $HOME
 
-# Set the default command to run the script 
+# Set the command to run the start-notebook.sh script
 CMD ["/usr/local/bin/start-notebook.sh"]
