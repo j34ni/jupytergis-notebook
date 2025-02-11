@@ -42,6 +42,7 @@ COPY --chown=notebook:notebook .jupyter/ /opt/.jupyter/
 RUN mkdir -p /home/notebook/.ipython/profile_default/security/ && \
     mkdir -p /home/notebook/work && \
     chown -R notebook:notebook "$CONDA_DIR/bin" "$HOME" /home/notebook/work && \
+    chmod -R 755 "$CONDA_DIR" "$HOME" /home/notebook/work && \
     chmod go+rwx -R "$CONDA_DIR/bin" && \
     mkdir -p "$CONDA_DIR/.condatmp" && \
     chmod go+rwx "$CONDA_DIR/.condatmp" && \

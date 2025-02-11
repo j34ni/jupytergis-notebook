@@ -31,6 +31,7 @@ fi
 
 if [ -f "/tmp/ipcontroller-client.json" ]; then
   mkdir -p "$HOME/.ipython/profile_default/security/"
+  chown -R notebook:notebook "$HOME/.ipython/profile_default/security/"
   ls -lah "$HOME/.ipython/profile_default/security/"
   cp "/tmp/ipcontroller-client.json" "$HOME/.ipython/profile_default/security/" || true
 fi
@@ -43,13 +44,13 @@ fi
 if [ -d "/mnt" ]; then
     for dir in /mnt/*/; do
       if [ -d "$dir" ]; then
-        dirname=${dir%*/}     # remove the trailing "/"
-        dirname=${dirname##*/}    # everything after the final "/"
+        dirname=${dir%*/}  
+        dirname=${dirname##*/}  
         if [ -L "$HOME/shared-$dirname" ]; then
           rm -f "$HOME/shared-$dirname"
         fi
-
         ln -sf "/mnt/$dirname" "$HOME/shared-$dirname"
+	chown -R notebook:notebook "$HOME/shared-$dirname"
       fi
     done
 fi
