@@ -22,9 +22,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     net-tools \
     openssh-client \
     screen \
-    sudo && \
+    sudo \
     tzdata \
-    vim \
+    vim && \
     apt-get -y autoremove && \
     apt-get -y clean && \
     rm -rf /var/lib/apt/lists/* && \
