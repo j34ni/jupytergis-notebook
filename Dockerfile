@@ -13,7 +13,7 @@ RUN mamba install -c conda-forge -y \
     escapism \
     geopandas \
     ipyparallel \
-    jupytergis \
+    jupytergis=0.2.0 \
     nb_conda_kernels \
     pycrdt \
     python=3.11 \
