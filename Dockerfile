@@ -6,7 +6,7 @@ USER root
 # Setup ENV for Appstore to be picked up
 ENV APP_UID=999 \
     APP_GID=999 \
-    PKG_JUPYTER_NOTEBOOK_VERSION=0.0.0
+    PKG_JUPYTER_NOTEBOOK_VERSION=7.0.6
 
 # Create a dedicated user for Jupyter
 RUN groupadd -g "$APP_GID" notebook && \
