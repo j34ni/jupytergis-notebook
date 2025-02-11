@@ -1,4 +1,4 @@
-FROM jupyter/base-notebook:x86_64-ubuntu-22.04
+FROM sigma2as/jupyterhub-singleuser-base-notebook:20231017-75e6934
 
 LABEL maintainer="jeani@nris.no"
 USER root
@@ -43,7 +43,7 @@ RUN mkdir -p /home/notebook/.ipython/profile_default/security/ /home/notebook/wo
 RUN mamba install -c conda-forge -y \
     escapism \
     geopandas \
-    jupytergis=0.2.0 \
+    jupytergis \
     nb_conda_kernels \
     pycrdt \
     python=3.11 \
