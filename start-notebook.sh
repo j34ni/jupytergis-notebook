@@ -56,4 +56,4 @@ if [ -d "/mnt" ]; then
 fi
 
 cd "$HOME"
-jupyter-lab --config "$HOME/.jupyter/jupyter_server_config.py" --no-browser
+jupyterhub-singleuser --config "$HOME/.jupyter/jupyter_server_config.py" 
