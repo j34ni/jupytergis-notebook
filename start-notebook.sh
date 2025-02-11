@@ -36,9 +36,7 @@ if [ -f "/tmp/ipcontroller-client.json" ]; then
   cp "/tmp/ipcontroller-client.json" "$HOME/.ipython/profile_default/security/" || true
 fi
 
-if [ ! -f "$HOME/.jupyter/jupyter_server_config.py" ]; then
-	cp -r "/opt/.jupyter/jupyter_server_config.py" "$HOME/.jupyter"
-fi
+cp -r "/opt/uio/jupyter_server_config.py" "$HOME/.jupyter"
 
 # If we have shared data directories mounted, make the folders available in the users home directory.
 if [ -d "/mnt" ]; then
