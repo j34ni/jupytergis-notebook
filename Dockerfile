@@ -3,8 +3,7 @@ FROM sigma2as/jupyterhub-singleuser-base-notebook:20231017-75e6934
 LABEL maintainer="jeani@nris.no"
 
 USER root
-RUN mkdir /opt/uio
-COPY --chown=notebook:notebook jupyter_server_config.py /opt/uio/
+COPY --chown=notebook:notebook jupyter_server_config.py $HOME/..jupyter/
 
 USER notebook
 WORKDIR $HOME

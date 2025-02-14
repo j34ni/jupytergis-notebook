@@ -25,10 +25,6 @@ else
     cmd=$*
 fi
 
-if [ ! -d "$HOME/.jupyter" ]; then
-	cp -r "/opt/.jupyter" "$HOME/.jupyter"
-fi
-
 if [ -f "/tmp/ipcontroller-client.json" ]; then
   mkdir -p "$HOME/.ipython/profile_default/security/"
   chown -R notebook:notebook "$HOME/.ipython/profile_default/security/"
