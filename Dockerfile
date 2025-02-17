@@ -23,7 +23,7 @@ RUN mamba install -c conda-forge -y \
 
 COPY start-notebook.sh /home/notebook/
 
-RUN chmod -R ugo+rwx /home/notebook/ 
+RUN chmod ugo+rwx /home/notebook/start-notebook.sh 
 
 # Set the command to run the start-notebook.sh script
 CMD ["/home/notebook/start-notebook.sh"]
