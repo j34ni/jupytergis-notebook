@@ -4,17 +4,26 @@ LABEL maintainer="jeani@nris.no"
 
 USER root
 
-# Install all GIS tools and necessary packages directly into the base environment
 RUN mamba install -c conda-forge -y \
     escapism \
     geopandas \
-    jupytergis=0.2.0 \
+    jupyterhub \
+    jupyter_server \
+    jupyterlab \
+    jupytergis \
     nb_conda_kernels \
     pycrdt \
     python=3.11 \
     qgis \
-    sqlite=3.45 && \
-    mamba clean --all -y
+    ipyleaflet \
+    folium \
+    gdal \
+    shapely \
+    rasterio \
+    xarray \
+    dask \
+    unzip \
+    && mamba clean --all -y
 
 COPY notebook_config.py /home/notebook/.jupyter/
 COPY start-notebook.sh /home/notebook/
