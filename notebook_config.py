@@ -11,10 +11,11 @@ headers = {
     'X-Frame-Options': 'ALLOWALL',
     'Content-Security-Policy': "; ".join([
         f"default-src 'self' https: {CORS_ORIGIN}",
-        "img-src 'self' data: https: blob:",
-        f"connect-src 'self' ws: wss: {CORS_ORIGIN_HOSTNAME}",
+        "img-src 'self' data: https: blob: *.tile.openstreetmap.org *.tile.opentopomap.org",
+        f"connect-src 'self' ws: wss: {CORS_ORIGIN_HOSTNAME} https://*.mapbox.com wss://*.jupytergis.org",
         f"style-src 'self' 'unsafe-inline' {CORS_ORIGIN}",
-        f"script-src 'self' 'unsafe-inline' 'unsafe-eval' https: {CORS_ORIGIN}" 
+        f"script-src 'self' 'unsafe-inline' 'unsafe-eval' https: {CORS_ORIGIN}",
+        "frame-src 'self' https:"
     ])
 }
 
