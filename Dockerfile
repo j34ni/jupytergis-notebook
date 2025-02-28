@@ -3,16 +3,17 @@ FROM sigma2as/jupyterhub-singleuser-base-notebook:20231017-75e6934
 LABEL maintainer="jeani@nris.no"
 
 USER root
+<<<<<<< HEAD
+=======
 COPY --chown=notebook:notebook jupyter_server_config.py $HOME/.jupyter/
+>>>>>>> cd01a6d49b3390db333951165dc74efb20636c6c
 
-USER notebook
-WORKDIR $HOME
+COPY --chown=notebook:notebook jupyter_server_config.py $HOME/.jupyter/
 
 # Install all GIS tools and necessary packages directly into the base environment
 RUN mamba install -c conda-forge -y \
     escapism \
     geopandas \
-    ipyparallel \
     jupytergis=0.2.0 \
     nb_conda_kernels \
     pycrdt \
@@ -21,9 +22,14 @@ RUN mamba install -c conda-forge -y \
     sqlite=3.45 && \
     mamba clean --all -y
 
+COPY notebook_config.py /home/notebook/.jupyter/
 COPY start-notebook.sh /home/notebook/
 
-RUN chmod ugo+rwx /home/notebook/start-notebook.sh 
+RUN chown -R notebook:notebook /home/notebook/ 
+RUN chmod -R 777 /home/notebook/
 
-# Set the command to run the start-notebook.sh script
+WORKDIR /home/notebook
+
+USER notebook
+
 CMD ["/home/notebook/start-notebook.sh"]
