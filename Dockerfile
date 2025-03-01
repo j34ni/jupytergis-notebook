@@ -7,6 +7,7 @@ USER root
 RUN mamba install -c conda-forge -y \
     geopandas \
     jupytergis \
+    jupyterlab \
     ipyleaflet \
     folium \
     gdal=3.6.* \
@@ -21,8 +22,7 @@ RUN mamba install -c conda-forge -y \
     unzip \
     && mamba clean --all -y
 
-RUN mamba install -c conda-forge -y jupyterlab \
-    && jupyter lab build
+RUN jupyter lab build
 
 COPY notebook_config.py /home/notebook/.jupyter/
 COPY start-notebook.sh /home/notebook/
