@@ -1,3 +1,4 @@
+# Use the latest Jupyter base image
 FROM jupyter/base-notebook:latest
 
 LABEL maintainer="jeani@nris.no"
@@ -9,34 +10,32 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Enhance existing Conda with mamba and update to a specific version
-RUN /opt/conda/bin/conda config --add channels conda-forge \
-    && /opt/conda/bin/conda config --set always_yes yes \
-    && /opt/conda/bin/conda install -n base conda=25.1.1 \
-    && /opt/conda/bin/conda update -n base conda \
-    && /opt/conda/bin/conda install -n base mamba
+# Enhance existing Conda with mamba and update environment
+RUN conda config --add channels conda-forge \
+    && conda config --set always_yes yes \
+    && conda update -n base conda \
+    && conda install -n base mamba \
+    && mamba update -c conda-forge --all
+
+# Switch to jovyan user for package installation and build
+USER $NB_USER
 
 # Install Python packages with mamba, pinning jupytergis=0.4.1
-RUN /opt/conda/bin/mamba install -y python=3.11 jupyterlab jupytergis=0.4.1 geopandas folium gdal proj proj-data shapely rasterio xarray dask pydeck h3 \
-    && /opt/conda/bin/mamba install -y ipyleaflet --force-reinstall \
-    && /opt/conda/bin/mamba clean --all -y \
-    && /opt/conda/bin/jupyter lab build
-
-# Install JupyterHub
-RUN pip install jupyterhub
+RUN mamba install -y jupyterlab jupytergis=0.4.1 geopandas \
+    && mamba install -y folium gdal proj proj-data shapely rasterio xarray dask pydeck h3 \
+    && mamba install -y ipyleaflet --force-reinstall \
+    && mamba clean --all -y 
 
 # Copy configuration and startup script
-COPY notebook_config.py /home/jovyan/.jupyter/
-COPY start-notebook.sh /home/jovyan/
+COPY notebook_config.py /home/$NB_USER/.jupyter/
+COPY start-notebook.sh /home/$NB_USER/
 
-# Set permissions and working directory
-RUN chown -R jovyan:users /opt/conda/share/proj/ \
-    && chown -R jovyan:users /home/jovyan \
-    && chmod -R 755 /home/jovyan
+# Set permissions, ignoring errors for unchangeable files
+RUN chown -R $NB_USER:users /home/$NB_USER -f \
+    && chmod -R 755 /home/$NB_USER \
+    && chown -R $NB_USER:users /opt/conda/share/proj/ -f
 
-WORKDIR /home/jovyan
-
-USER jovyan
+WORKDIR /home/$NB_USER
 
 # Command to start the single-user server
-CMD ["/home/jovyan/start-notebook.sh"]
+CMD ["/home/$NB_USER/start-notebook.sh"]
