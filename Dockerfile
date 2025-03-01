@@ -1,11 +1,10 @@
-# Use the latest Jupyter base image
 FROM jupyter/base-notebook:latest
 
 LABEL maintainer="jeani@nris.no"
 
 USER root
 
-# Install additional system dependencies
+# Install additional system dependencies (already present, but ensure unzip)
 RUN apt-get update && apt-get install -y \
     unzip \
     && rm -rf /var/lib/apt/lists/*
@@ -17,14 +16,14 @@ RUN conda config --add channels conda-forge \
     && conda install -n base mamba \
     && mamba update -c conda-forge --all
 
-# Switch to jovyan user for package installation and build
+# Switch to jovyan user for package installation
 USER $NB_USER
 
-# Install Python packages with mamba, pinning jupytergis=0.4.1
-RUN mamba install -y jupyterlab jupytergis=0.4.1 geopandas \
-    && mamba install -y folium gdal proj proj-data shapely rasterio xarray dask pydeck h3 \
+# Install only jupytergis and reinstall ipyleaflet
+RUN mamba install -y jupytergis=0.4.1 \
     && mamba install -y ipyleaflet --force-reinstall \
-    && mamba clean --all -y 
+    && mamba clean --all -y
+    # Skipping jupyter lab build to use pre-built assets
 
 # Copy configuration and startup script
 COPY notebook_config.py /home/$NB_USER/.jupyter/
