@@ -4,11 +4,10 @@ LABEL maintainer="jeani@nris.no"
 
 USER root
 
-# Install only necessary packages, avoiding redundancy
 RUN mamba install -c conda-forge -y \
     geopandas \
-    jupytergis=0.2.0 \
-    ipyleaflet=0.17.0 \
+    jupytergis \
+    ipyleaflet \
     folium \
     gdal=3.6.* \
     proj=9.* \
@@ -20,7 +19,10 @@ RUN mamba install -c conda-forge -y \
     pydeck \
     h3 \
     unzip \
-    && mamba clean --all -y 
+    && mamba clean --all -y
+
+RUN mamba install -c conda-forge -y jupyterlab \
+    && jupyter lab build
 
 COPY notebook_config.py /home/notebook/.jupyter/
 COPY start-notebook.sh /home/notebook/
