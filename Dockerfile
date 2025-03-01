@@ -15,13 +15,13 @@ RUN /opt/conda/bin/conda config --add channels conda-forge \
     && /opt/conda/bin/conda update -n base conda \
     && /opt/conda/bin/conda install -n base mamba
 
-# Install Python packages with mamba, updating to latest jupytergis
+# Install Python packages with mamba, pinning jupytergis=0.4.1 and reinstalling ipyleaflet
 RUN /opt/conda/bin/mamba install -y \
     python=3.11 \
     jupyterlab \
     jupytergis=0.4.1 \
     geopandas \
-    ipyleaflet \
+    ipyleaflet --force-reinstall \
     folium \
     gdal \
     proj \
