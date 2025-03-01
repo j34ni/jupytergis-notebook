@@ -9,12 +9,16 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Enhance existing Conda with mamba and install all packages in one step
+# Enhance existing Conda with mamba and update to a specific version
 RUN /opt/conda/bin/conda config --add channels conda-forge \
     && /opt/conda/bin/conda config --set always_yes yes \
+    && /opt/conda/bin/conda install -n base conda=25.1.1 \
     && /opt/conda/bin/conda update -n base conda \
-    && /opt/conda/bin/conda install -n base mamba \
-    && /opt/conda/bin/mamba install -y python=3.11 jupyterlab jupytergis=0.4.1 geopandas ipyleaflet --force-reinstall folium gdal proj proj-data shapely rasterio xarray dask pydeck h3 \
+    && /opt/conda/bin/conda install -n base mamba
+
+# Install Python packages with mamba, pinning jupytergis=0.4.1
+RUN /opt/conda/bin/mamba install -y python=3.11 jupyterlab jupytergis=0.4.1 geopandas folium gdal proj proj-data shapely rasterio xarray dask pydeck h3 \
+    && /opt/conda/bin/mamba install -y ipyleaflet --force-reinstall \
     && /opt/conda/bin/mamba clean --all -y \
     && /opt/conda/bin/jupyter lab build
 
