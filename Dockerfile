@@ -4,17 +4,10 @@ LABEL maintainer="jeani@nris.no"
 
 USER root
 
+# Install only necessary packages, avoiding redundancy
 RUN mamba install -c conda-forge -y \
-    escapism \
     geopandas \
-    jupyterhub \
-    jupyter_server \
-    jupyterlab=3.6.* \
     jupytergis=0.2.0 \
-    nb_conda_kernels \
-    pycrdt \
-    python=3.11 \
-    qgis \
     ipyleaflet=0.17.0 \
     folium \
     gdal=3.6.* \
@@ -27,8 +20,7 @@ RUN mamba install -c conda-forge -y \
     pydeck \
     h3 \
     unzip \
-    && mamba clean --all -y \
-    && ls -l /opt/conda/share/proj/  # Debug: Check contents
+    && mamba clean --all -y 
 
 COPY notebook_config.py /home/notebook/.jupyter/
 COPY start-notebook.sh /home/notebook/
