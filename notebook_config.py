@@ -7,5 +7,5 @@ c.ServerApp.port = 8888
 c.ServerApp.base_url = '/'
 c.ServerApp.allow_origin = os.environ.get('JUPYTERHUB_HOST', '*')
 c.ServerApp.log_level = 'DEBUG'
-c.ServerApp.root_dir = f'/home/{os.environ["NB_USER"]}'
+c.ServerApp.root_dir = f'/home/{os.environ["jovyan"]}'
 c.IdentityProvider.token = os.environ.get('JUPYTERHUB_API_TOKEN', '')

@@ -20,17 +20,17 @@ RUN mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
     && mamba clean --all -y
 
 # Copy configuration and startup script
-COPY notebook_config.py /home/$NB_USER/.jupyter/
-COPY start-notebook.sh /home/$NB_USER/
+COPY notebook_config.py /home/jovyan/.jupyter/
+COPY start-notebook.sh /home/jovyan/
 
 # Set permissions, avoiding problematic directories
-RUN chown -R $NB_USER:users /opt/conda/share/proj/ \
-    && chown -R $NB_USER:users /home/$NB_USER \
-    && chmod -R 755 /home/$NB_USER
+RUN chown -R jovyan:users /opt/conda/share/proj/ \
+    && chown -R jovyan:users /home/jovyan \
+    && chmod -R 755 /home/jovyan
 
-WORKDIR /home/$NB_USER
+WORKDIR /home/jovyan
 
-USER $NB_USER
+USER jovyan
 
 # Command to start the single-user server
-CMD ["/home/$NB_USER/start-notebook.sh"]
+CMD ["/home/jovyan/start-notebook.sh"]
