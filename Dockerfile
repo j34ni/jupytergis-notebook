@@ -10,10 +10,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Enhance existing Conda with mamba and update environment
-RUN /opt/conda/bin/conda config --add channels conda-forge \
-    && /opt/conda/bin/conda config --set always_yes yes \
-    && /opt/conda/bin/conda update -n base conda \
-    && /opt/conda/bin/conda install -n base mamba
+RUN conda config --add channels conda-forge \
+    && conda config --set always_yes yes \
+    && conda update -n base conda \
+    && conda install -n base mamba
 
 # Install Python packages with mamba, pinning jupytergis=0.4.1
 RUN mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
@@ -23,14 +23,16 @@ RUN mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
 COPY notebook_config.py /home/jovyan/.jupyter/
 COPY start-notebook.sh /home/jovyan/
 
-# Set permissions, avoiding problematic directories
-RUN chown -R jovyan:users /opt/conda/share/proj/ \
-    && chown -R jovyan:users /home/jovyan \
+# Set permissions
+RUN chown -R jovyan:users /home/jovyan \
     && chmod -R 755 /home/jovyan
 
 WORKDIR /home/jovyan
 
 USER jovyan
 
-# Command to start the single-user server
+# Expose default port (will be overridden by JUPYTER_PORT if set)
+EXPOSE 8888
+
+# Command to start the notebook server
 CMD ["/home/jovyan/start-notebook.sh"]

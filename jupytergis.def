@@ -1,0 +1,34 @@
+Bootstrap: docker
+From: jupyter/base-notebook:latest
+
+%labels
+    Maintainer jeani@nris.no
+
+%post
+    /opt/conda/bin/conda config --add channels conda-forge 
+    /opt/conda/bin/conda config --set always_yes yes 
+    /opt/conda/bin/conda update -n base conda 
+    /opt/conda/bin/conda install -n base mamba
+
+    mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas
+    mamba clean --all -y
+
+    chown -R 1000:100 /opt/conda/share/proj/ 
+    chown -R 1000:100 /home/jovyan 
+    chmod -R 755 /home/jovyan
+
+%files
+    notebook_config.py /home/jovyan/.jupyter/notebook_config.py
+    start-notebook.sh /home/jovyan/start-notebook.sh
+
+%environment
+    export HOME=/home/jovyan
+
+%runscript
+    # Use the user's home script if available, else fall back to container's
+    START_SCRIPT=${HOME}/start-notebook.sh
+    if [ -f "$START_SCRIPT" ]; then
+        exec "$START_SCRIPT"
+    else
+        exec /home/jovyan/start-notebook.sh
+    fi
