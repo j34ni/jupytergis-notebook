@@ -24,14 +24,14 @@ RUN mamba install -c conda-forge -y \
 
 RUN jupyter lab build
 
-COPY notebook_config.py /home/notebook/.jupyter/
-COPY start-notebook.sh /home/notebook/
+COPY notebook_config.py /opt/uio
+COPY start-notebook.sh /opt/uio
 
-RUN chown -R notebook:notebook /home/notebook/
-RUN chmod -R 777 /home/notebook/
+RUN chown -R notebook:notebook /opt/uio
+RUN chmod -R 777 /opt/uio
 
 WORKDIR /home/notebook
 
 USER notebook
 
-CMD ["/home/notebook/start-notebook.sh"]
+CMD ["/opt/uio/start-notebook.sh"]
