@@ -30,10 +30,4 @@ From: jupyter/base-notebook:latest
     export HOME=/home/jovyan
 
 %runscript
-    # Use the user's home script if available, else fall back to container's
-    START_SCRIPT=${HOME}/start-notebook.sh
-    if [ -f "$START_SCRIPT" ]; then
-        exec "$START_SCRIPT"
-    else
-        exec /home/jovyan/start-notebook.sh
-    fi
+    exec /home/jovyan/start-notebook.sh
