@@ -20,7 +20,6 @@ RUN mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
     && mamba clean --all -y
 
 # Copy configuration and startup script
-COPY notebook_config.py /home/jovyan/.jupyter/
 COPY start-notebook.sh /home/jovyan/
 
 # Set permissions

@@ -24,7 +24,6 @@ From: jupyter/base-notebook:latest
     rm -f /home/jovyan/.jupyter/notebook_config.py
 
 %files
-    # notebook_config.py /home/jovyan/.jupyter/notebook_config.py  # Commented out
     start-notebook.sh /home/jovyan/start-notebook.sh
 
 %environment
