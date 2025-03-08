@@ -19,18 +19,21 @@ RUN conda config --add channels conda-forge \
 RUN mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
     && mamba clean --all -y
 
-# Copy configuration and startup script
-COPY start-notebook.sh /home/jovyan/
+# Copy the startup script and minimal notebook_config.py
+COPY notebook_config.py /home/jovyan/.jupyter/ \
+    && COPY start-notebook.sh /home/jovyan/
 
-# Set permissions
-RUN chown -R jovyan:users /home/jovyan \
-    && chmod -R 755 /home/jovyan
+# Set permissions to be more permissive for host user mapping
+RUN chown -R 1000:100 /home/jovyan \
+    && chmod -R 755 /home/jovyan \
+    && chmod -R u+rwX /home/jovyan
 
 WORKDIR /home/jovyan
 
+# Switch to jovyan as default, but rely on runtime user mapping
 USER jovyan
 
-# Expose default port (will be overridden by JUPYTER_PORT if set)
+# Expose default port (used as fallback; OOD assigns a dynamic port)
 EXPOSE 8888
 
 # Command to start the notebook server

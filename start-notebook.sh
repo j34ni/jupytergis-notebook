@@ -4,10 +4,20 @@
 . /opt/conda/etc/profile.d/conda.sh
 conda activate
 
-# Set default port if not provided
-JUPYTER_PORT=${JUPYTER_PORT:-8888}
+# Set CONFIG_FILE to the bind-mounted path
+CONFIG_FILE="/mnt/config/config.py"
 
-# Use user's home for runtime, config, and data if writable, else /tmp
+# Debug: Log environment variables
+echo "Inside container: CONFIG_FILE=$CONFIG_FILE"
+echo "Inside container: HOME=$HOME"
+echo "Inside container: UID=$(id -u), GID=$(id -g)"
+
+# Adjust ownership of HOME if writable and UID differs from jovyan (1000)
+if [ -w "$HOME" ] && [ "$(id -u)" -ne 1000 ]; then
+    chown -R "$(id -u):$(id -g)" "$HOME"
+fi
+
+# Use the resolved HOME for runtime, config, and data if writable, else /tmp
 if [ -w "$HOME" ]; then
     export JUPYTER_RUNTIME_DIR=${JUPYTER_RUNTIME_DIR:-$HOME/.jupyter/runtime}
     export JUPYTER_CONFIG_DIR=${JUPYTER_CONFIG_DIR:-$HOME/.jupyter}
@@ -19,11 +29,11 @@ else
 fi
 mkdir -p "$JUPYTER_RUNTIME_DIR" "$JUPYTER_CONFIG_DIR" "$JUPYTER_DATA_DIR"
 
-# Check if JUPYTERHUB_SERVICE_URL is set
-if [ -z "$JUPYTERHUB_SERVICE_URL" ]; then
-    echo "Running standalone JupyterLab (not under JupyterHub) on port $JUPYTER_PORT"
-    exec jupyter-lab --ip=0.0.0.0 --port="$JUPYTER_PORT" --allow-root --no-browser
+# Check if CONFIG_FILE exists (set by bind mount)
+if [ -f "$CONFIG_FILE" ]; then
+    echo "Using OOD-generated config file: $CONFIG_FILE"
+    exec jupyter-lab --config="$CONFIG_FILE" --allow-root
 else
-    echo "Running under JupyterHub"
-    exec jupyterhub-singleuser --config="$JUPYTER_CONFIG_DIR/notebook_config.py" --SingleUserLabApp.default_url=/lab
+    echo "ERROR: CONFIG_FILE not found at $CONFIG_FILE, running with default config"
+    exec jupyter-lab --ip=0.0.0.0 --port=8888 --allow-root --no-browser
 fi
