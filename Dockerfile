@@ -19,9 +19,8 @@ RUN conda config --add channels conda-forge \
 RUN mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
     && mamba clean --all -y
 
-# Copy the startup script and minimal notebook_config.py
-COPY notebook_config.py /home/jovyan/.jupyter/ \
-    && COPY start-notebook.sh /home/jovyan/
+# Copy the startup script
+COPY start-notebook.sh /home/jovyan/
 
 # Set permissions to be more permissive for host user mapping
 RUN chown -R 1000:100 /home/jovyan \
