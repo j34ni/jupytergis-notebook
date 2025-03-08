@@ -5,20 +5,26 @@ From: jupyter/base-notebook:latest
     Maintainer jeani@nris.no
 
 %post
-    /opt/conda/bin/conda config --add channels conda-forge 
-    /opt/conda/bin/conda config --set always_yes yes 
-    /opt/conda/bin/conda update -n base conda 
-    /opt/conda/bin/conda install -n base mamba
+    # Update Conda configuration and install mamba
+    /opt/conda/bin/conda config --add channels conda-forge \
+        && /opt/conda/bin/conda config --set always_yes yes \
+        && /opt/conda/bin/conda update -n base conda \
+        && /opt/conda/bin/conda install -n base mamba
 
-    mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas
-    mamba clean --all -y
+    # Install Python packages with mamba, pinning jupytergis=0.4.1
+    mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
+        && mamba clean --all -y
 
-    chown -R 1000:100 /opt/conda/share/proj/ 
-    chown -R 1000:100 /home/jovyan 
-    chmod -R 755 /home/jovyan
+    # Set permissions
+    chown -R 1000:100 /opt/conda/share/proj/ \
+        && chown -R 1000:100 /home/jovyan \
+        && chmod -R 755 /home/jovyan
+
+    # Remove notebook_config.py if it exists
+    rm -f /home/jovyan/.jupyter/notebook_config.py
 
 %files
-    notebook_config.py /home/jovyan/.jupyter/notebook_config.py
+    # notebook_config.py /home/jovyan/.jupyter/notebook_config.py  # Commented out
     start-notebook.sh /home/jovyan/start-notebook.sh
 
 %environment
