@@ -16,7 +16,7 @@ RUN conda config --add channels conda-forge \
     && conda install -n base mamba
 
 # Install Python packages with mamba, pinning jupytergis=0.4.1
-RUN mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
+RUN mamba install -y bottleneck cartopy folium fsspec graphviz ipyleaflet jupyterlab jupytergis=0.4.1 geopandas mapclassify matplotlib matplotlib-inline mystmd numpy xarray \
     && mamba clean --all -y
 
 # Copy the startup script
