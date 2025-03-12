@@ -10,14 +10,11 @@ APPTAINERIMAGE="$HOME/ondemand/dev/JupyterGIS/jupytergis-notebook_ood.sif"
 NOTEBOOK_DIR="${HOME}/jupytergis_notebooks"
 mkdir -p "${NOTEBOOK_DIR}"
 
-# Debug: Log environment variables and verify CONFIG_FILE
+# Debug: Log environment variables
 echo "CONFIG_FILE=$CONFIG_FILE"
 echo "Port from before.sh.erb: $port"
-if [ -f "$CONFIG_FILE" ]; then
-    echo "CONFIG_FILE exists on host"
-else
-    echo "ERROR: CONFIG_FILE not found on host at $CONFIG_FILE"
-fi
+echo "Checking if CONFIG_FILE exists at: $CONFIG_FILE"
+ls -l "$CONFIG_FILE" || echo "CONFIG_FILE does not exist or is inaccessible"
 
 # Launch JupyterGIS with the config file, binding the session directory
 apptainer exec --bind "$(dirname ${CONFIG_FILE}):/mnt/config" \
