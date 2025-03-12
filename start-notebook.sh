@@ -34,6 +34,8 @@ if [ -f "$CONFIG_FILE" ]; then
     echo "Using OOD-generated config file: $CONFIG_FILE"
     exec jupyter-lab --config="$CONFIG_FILE" --allow-root
 else
-    echo "ERROR: CONFIG_FILE not found at $CONFIG_FILE, running with default config"
-    exec jupyter-lab --ip=0.0.0.0 --port=8888 --allow-root --no-browser
+    # Use JUPYTER_PORT environment variable if set, default to 8888
+    PORT=${JUPYTER_PORT:-8888}
+    echo "Running with default config on port $PORT"
+    exec jupyter-lab --ip=0.0.0.0 --port="$PORT" --allow-root --no-browser
 fi
