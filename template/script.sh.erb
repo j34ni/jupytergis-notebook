@@ -13,8 +13,6 @@ mkdir -p "${NOTEBOOK_DIR}"
 # Debug: Log environment variables
 echo "CONFIG_FILE=$CONFIG_FILE"
 echo "Port from before.sh.erb: $port"
-echo "Checking if CONFIG_FILE exists at: $CONFIG_FILE"
-ls -l "$CONFIG_FILE" || echo "CONFIG_FILE does not exist or is inaccessible"
 
 # Launch JupyterGIS with the config file, binding the session directory
 apptainer exec --bind "$(dirname ${CONFIG_FILE}):/mnt/config" \
