@@ -1,62 +1,51 @@
-FROM ubuntu:22.04
+FROM sigma2as/jupyterhub-singleuser-base-notebook:20231017-75e6934
 
 LABEL maintainer="jeani@nris.no"
+
 USER root
+ENV DEBIAN_FRONTEND noninteractive \
+    NB_UID=999 \
+    NB_GID=999
 
-# Install basic packages
-RUN apt update -y && \
-    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends tzdata wget && \
-    apt clean
+RUN mamba install -c conda-forge -y \
+    geopandas \
+    jupytergis \
+    jupyterlab \
+    ipyleaflet \
+    folium \
+    gdal=3.6.* \
+    plotly \
+    xarray \
+    proj=9.* \
+    proj-data \
+    shapely \
+    rasterio \
+    xarray \
+    dask \
+    pydeck \
+    h3 \
+    unzip \
+    && mamba clean --all -y
 
-# Install Miniforge3
-RUN wget -q -nc --no-check-certificate -P /var/tmp https://github.com/conda-forge/miniforge/releases/download/24.9.2-0/Miniforge3-24.9.2-0-Linux-x86_64.sh && \
-    bash /var/tmp/Miniforge3-24.9.2-0-Linux-x86_64.sh -b -p /opt/conda
+RUN jupyter lab build
 
-# Setup ENV for Appstore to be picked up
-ENV APP_UID=999 \
-    APP_GID=999 \
-    PKG_JUPYTER_LAB_VERSION=4.3.5
+COPY notebook_config.py /opt/uio
+COPY start-notebook.sh /opt/uio
 
-# Create a dedicated user for Jupyter
+RUN chown -R notebook:notebook /opt/uio
+RUN chmod -R 777 /opt/uio
+
 RUN groupadd -g "$APP_GID" notebook && \
     useradd -m -s /bin/bash -N -u "$APP_UID" -g notebook notebook && \
-    usermod -G users notebook && chmod go+rwx -R "$CONDA_DIR/bin"
+    usermod -G users notebook
 
-ENV TZ="Europe/Oslo"
+ENV TZ="Europe/Oslo" \
+	NB_UID=999 \
+	NB_GID=999 \
+	HOME=/home/notebook
 
-# Minimal setup for Jupyter environment
-ENV HOME=/home/notebook \
-    XDG_CACHE_HOME=/home/notebook/.cache/
+WORKDIR /home/notebook
 
-# Copy scripts and configurations
-COPY normalize-username.py /usr/local/bin/
-
-# Install GIS tools and fix SQLite issue directly in the base environment
-RUN . /opt/conda/etc/profile.d/conda.sh && conda activate && \
-    mamba install -c conda-forge -y \
-    escapism \
-    geopandas \
-    jupytergis=0.2.0 \
-    jupyterhub==4.* \
-    nb_conda_kernels \
-    notebook \
-    pycrdt \
-    qgis \
-    sqlite=3.45 && \
-    mamba clean --all -y
-
-# Ensure Conda is configured for the notebook user
 USER notebook
-WORKDIR $HOME
-COPY jupyter_lab_config.py $HOME/
 
-# Create the script in the notebook user's home directory
-RUN echo '#!/bin/bash\n\
-set -e\n\
-. /opt/conda/etc/profile.d/conda.sh\n\
-conda activate\n\
-jupyter lab --config "$HOME/jupyter_lab_config.py"' > $HOME/start-notebook.sh \
-    && chmod +x /home/notebook/start-notebook.sh
-
-# Set the default command to run the script 
-CMD ["./start-notebook.sh"]
+CMD ["/opt/uio/start-notebook.sh"]
