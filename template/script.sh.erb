@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Set working directory
+cd "${HOME}"
+
+# Path to your Singularity container
+APPTAINERIMAGE="$HOME/ondemand/dev/JupyterGIS/jupytergis-notebook_ood.sif"
+
+# Notebook directory
+NOTEBOOK_DIR="${HOME}/jupytergis_notebooks"
+mkdir -p "${NOTEBOOK_DIR}"
+
+# Debug: Log environment variables
+echo "CONFIG_FILE=$CONFIG_FILE"
+echo "Port from before.sh.erb: $port"
+
+# Launch JupyterGIS with the config file, binding the session directory
+apptainer exec --bind "$(dirname ${CONFIG_FILE}):/mnt/config" \
+               "${APPTAINERIMAGE}" /home/jovyan/start-notebook.sh

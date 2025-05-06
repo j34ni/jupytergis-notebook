@@ -1,0 +1,46 @@
+batch_connect:
+  template: "basic"
+
+script:
+  job_name: "OOD Jupyter"
+  native: [
+            "-c", "<%= ec_cpus.blank?  ? 1 : ec_cpus.to_i %>",
+           <%- if ec_gpus.to_i > 0 -%>
+              <%- case global_fox_alacarte -%>
+                <%- when 'RTX30' -%>
+                  "--partition=accel",
+                  "--gres=gpu:rtx30:<%= ec_gpus.to_i %>",
+                <%- when 'A100-40' -%>
+                  "--partition=accel",
+                  "--gres=gpu:a100:<%= ec_gpus.to_i %>",
+                  "--exclude=gpu-[7-9]",
+                <%- when 'A100-80' -%>
+                  "--partition=accel",
+                  "--gres=gpu:a100:<%= ec_gpus.to_i %>",
+                  "--exclude=gpu-[1-2,13]",
+                <% when 'A40' -%>
+                  "--partition=accel",
+                  "--gres=gpu:a40",
+                <%- when 'L40S' -%>
+                  "--partition=accel",
+                  "--gres=gpu:l40s:<%= ec_gpus.to_i %>",
+                <%- when 'H100NV' -%>
+                  "--partition=accel",
+                  "--gres=gpu:h100nv:<%= ec_gpus.to_i %>",
+                <%- when 'MIG' -%>
+                  "--partition=mig",
+                  "-G", "<%= ec_gpus.to_i %>",
+                <%- else -%>
+                  "--partition=accel",
+                  "--gres=gpu:<%= global_fox_gpugres %>:<%= ec_gpus.to_i %>",
+                <%- end -%>
+
+            <%- else -%>
+                "--partition=normal",
+            <%- end -%>
+
+            <%- if not ec_mem.blank? -%>
+                "--mem", "<%= ec_mem.to_i %>G"
+            <%- end -%>
+
+          ]

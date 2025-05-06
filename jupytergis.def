@@ -1,0 +1,33 @@
+Bootstrap: docker
+From: jupyter/base-notebook:latest
+
+%labels
+    Maintainer jeani@nris.no
+
+%post
+    # Update Conda configuration and install mamba
+    /opt/conda/bin/conda config --add channels conda-forge \
+        && /opt/conda/bin/conda config --set always_yes yes \
+        && /opt/conda/bin/conda update -n base conda \
+        && /opt/conda/bin/conda install -n base mamba
+
+    # Install Python packages with mamba, pinning jupytergis=0.4.1
+    mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
+        && mamba clean --all -y
+
+    # Set permissions
+    chown -R 1000:100 /opt/conda/share/proj/ \
+        && chown -R 1000:100 /home/jovyan \
+        && chmod -R 755 /home/jovyan
+
+    # Remove notebook_config.py if it exists
+    rm -f /home/jovyan/.jupyter/notebook_config.py
+
+%files
+    start-notebook.sh /home/jovyan/start-notebook.sh
+
+%environment
+    export HOME=/home/jovyan
+
+%runscript
+    exec /home/jovyan/start-notebook.sh

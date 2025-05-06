@@ -1,0 +1,16 @@
+---
+name: JupyterGIS
+category: Interactive Apps
+subcategory: Jupyter
+role: batch_connect
+description: |
+        This app will launch JupyterGIS on Fox.
+
+        JupyterGIS combines Jupyter notebooks with the capabilities normally offered by a GIS (Geographic Information System).
+       
+        It also comes with a feature called RTC (Real-Time Collaboration) for multiple users to simultaneously work on the same code. 
+        
+        Perform geospatial analysis and visualize geographic data interactively with colleagues.
+tile:
+  sub_caption: "JupyterGIS"
+icon: "$HOME/ondemand/dev/JupyterGIS/icon.jpg"
