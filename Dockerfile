@@ -19,6 +19,14 @@ RUN conda config --add channels conda-forge \
 RUN mamba install -y bottleneck cartopy folium fsspec graphviz ipyleaflet jupyterlab jupytergis=0.4.1 geopandas mapclassify matplotlib matplotlib-inline mystmd numpy xarray \
     && mamba clean --all -y
 
+# Add a default configuration file to enable RTC
+RUN mkdir -p /etc/jupyter \
+    && echo "c.JupyterLabApp.collaborative = True" > /etc/jupyter/jupyter_lab_config.py \
+    && echo "c.ServerApp.allow_origin = '*'" >> /etc/jupyter/jupyter_lab_config.py \
+    && echo "c.ServerApp.disable_check_xsrf = True" >> /etc/jupyter/jupyter_lab_config.py \
+    && echo "c.ServerApp.ip = '0.0.0.0'" >> /etc/jupyter/jupyter_lab_config.py \
+    && echo "c.ServerApp.allow_remote_access = True" >> /etc/jupyter/jupyter_lab_config.py
+
 # Copy the startup script
 COPY start-notebook.sh /home/jovyan/
 

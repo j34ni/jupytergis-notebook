@@ -6,6 +6,7 @@ conda activate
 
 # Set CONFIG_FILE to the bind-mounted path
 CONFIG_FILE="/mnt/config/config.py"
+DEFAULT_CONFIG_FILE="/etc/jupyter/jupyter_lab_config.py"
 
 # Debug: Log environment variables
 echo "Inside container: CONFIG_FILE=$CONFIG_FILE"
@@ -32,10 +33,12 @@ mkdir -p "$JUPYTER_RUNTIME_DIR" "$JUPYTER_CONFIG_DIR" "$JUPYTER_DATA_DIR"
 # Check if CONFIG_FILE exists (set by bind mount)
 if [ -f "$CONFIG_FILE" ]; then
     echo "Using OOD-generated config file: $CONFIG_FILE"
+    echo "Contents of $CONFIG_FILE:"
+    cat "$CONFIG_FILE"  # Debug: Print the config file contents
     exec jupyter-lab --config="$CONFIG_FILE" --allow-root
 else
     # Use JUPYTER_PORT environment variable if set, default to 8888
     PORT=${JUPYTER_PORT:-8888}
-    echo "Running with default config on port $PORT"
-    exec jupyter-lab --ip=0.0.0.0 --port="$PORT" --allow-root --no-browser
+    echo "No OOD config found, using default config on port $PORT: $DEFAULT_CONFIG_FILE"
+    exec jupyter-lab --config="$DEFAULT_CONFIG_FILE" --port="$PORT" --allow-root --no-browser
 fi
