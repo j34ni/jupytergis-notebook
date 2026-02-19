@@ -3,15 +3,15 @@ From: quay.io/galaxy/docker-jupyter-notebook:25.12.1
 
 %post
     NB_USER=jovyan
-    conda install --yes \
-        bioblend galaxy-ie-helpers && \
-        conda clean --all -y --force-pkgs-dirs && \
-        fix-permissions /opt/conda
+    conda install --yes bioblend galaxy-ie-helpers
+    conda clean --all -y --force-pkgs-dirs 
+    find /opt/conda -xtype l -delete
+    fix-permissions /opt/conda
 
     pip install jupytergis==0.13.2
 
-    chown -R $NB_USER:users /home/$NB_USER/ /import /export/ && \
-        chmod -R 777 /home/$NB_USER/ /import /export/
+    chown -R $NB_USER:users /home/$NB_USER/ /import /export/
+    chmod -R 777 /home/$NB_USER/ /import /export/
 
 %files
     jupyter_notebook_config.py /home/${NB_USER}/.jupyter/jupyter_notebook_config.py
