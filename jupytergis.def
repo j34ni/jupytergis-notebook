@@ -3,7 +3,7 @@ From: quay.io/galaxy/docker-jupyter-notebook:25.12.1
 
 %post
     NB_USER=jovyan
-    conda install --yes bioblend galaxy-ie-helpers
+    conda install --yes bioblend galaxy-ie-helpers qgis
     conda clean --all -y --force-pkgs-dirs 
     find /opt/conda -xtype l -delete
     fix-permissions /opt/conda
