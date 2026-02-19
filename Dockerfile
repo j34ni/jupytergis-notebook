@@ -1,57 +1,37 @@
-FROM jupyter/base-notebook:latest
+FROM quay.io/galaxy/docker-jupyter-notebook:25.12.1
 
-LABEL maintainer="jeani@nris.no"
+RUN conda install --yes \ 
+    bioblend galaxy-ie-helpers \
+    qgis && \
+    conda clean --all -y  && \
+    fix-permissions /opt/conda
 
-USER root
+RUN pip install jupytergis==0.13.2 'jupyter-ai[all]'
 
-# Install additional system dependencies
-RUN apt-get update && apt-get install -y \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
+ADD jupyter_notebook_config.py /home/$NB_USER/.jupyter/
+ADD jupyter_lab_config.py /home/$NB_USER/.jupyter/
 
-# Enhance existing Conda with mamba and update environment
-RUN conda config --add channels conda-forge \
-    && conda config --set always_yes yes \
-    && conda update -n base conda \
-    && conda install -n base mamba
+RUN chown -R $NB_USER:users /home/$NB_USER/ /import /export/ && \
+    chmod -R 777 /home/$NB_USER/ /import /export/
 
-# Install Python packages with mamba, pinning jupytergis=0.5.0
-RUN mamba install -y bottleneck cartopy folium fsspec graphviz ipyleaflet jupyterlab jupytergis=0.5.0 geopandas mapclassify matplotlib matplotlib-inline mystmd numpy xarray \
-    && mamba clean --all -y
+RUN mkdir -p /opt/ollama/bin /opt/ollama/models && \
+    chown -R $NB_USER:users /opt/ollama
 
-# Add a default configuration file to enable RTC and JupyterGIS
-RUN mkdir -p /etc/jupyter \
-    && echo "import os" > /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.JupyterLabApp.collaborative = True" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.allow_origin = '*'" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.disable_check_xsrf = True" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.ip = '0.0.0.0'" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.allow_remote_access = True" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.allow_root = False" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.token = ''" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.password = ''" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.base_url = os.environ.get('JUPYTERHUB_BASE_URL', os.environ.get('PROXY_PREFIX', '/user/' + os.environ.get('JUPYTERHUB_USER', 'default') + '/'))" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.static_url_prefix = c.ServerApp.base_url + 'static/'" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.port = int(os.environ.get('JUPYTER_PORT', 8888))" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.root_dir = os.environ.get('JUPYTER_ROOT_DIR', os.path.expanduser('~/jupytergis_notebooks'))" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.LabApp.extensions = {'jupytergis': True}" >> /etc/jupyter/jupyter_lab_config.py \
-    && echo "c.ServerApp.log_level = 'DEBUG'" >> /etc/jupyter/jupyter_lab_config.py
+RUN cd /opt/ollama && \
+    curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz && \
+    tar -xzf ollama-linux-amd64.tgz && \
+    rm ollama-linux-amd64.tgz
 
-# Copy the startup script
-COPY start-notebook.sh /home/jovyan/
+ENV PATH="/opt/ollama/bin:${PATH}"
 
-# Set permissions to be more permissive for host user mapping
-RUN chown -R 1000:100 /home/jovyan \
-    && chmod -R 755 /home/jovyan \
-    && chmod -R u+rwX /home/jovyan
+RUN ollama serve & \
+    until curl -s http://localhost:11434/api/tags > /dev/null; do sleep 1; done && \
+    ollama pull llama3.2 && \
+    pkill ollama
 
-WORKDIR /home/jovyan
+WORKDIR /import
 
-# Switch to jovyan as default, but rely on runtime user mapping
-USER jovyan
+COPY start-ollama.sh /usr/local/bin/start-ollama.sh
+RUN chmod +x /usr/local/bin/start-ollama.sh
 
-# Expose default port (used as fallback; OOD assigns a dynamic port)
-EXPOSE 8888
-
-# Command to start the notebook server
-CMD ["/home/jovyan/start-notebook.sh"]
+CMD /startup.sh
