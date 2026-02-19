@@ -1,14 +1,11 @@
 Bootstrap: docker
 From: quay.io/galaxy/docker-jupyter-notebook:25.12.1
 
-%environment
-    export PATH="/opt/ollama/bin:${PATH}"
-
 %post
     NB_USER=jovyan
     conda install --yes \
         bioblend galaxy-ie-helpers && \
-        conda clean --all -y && \
+        conda clean --all -y --force-pkgs-dirs && \
         fix-permissions /opt/conda
 
     pip install jupytergis==0.13.2

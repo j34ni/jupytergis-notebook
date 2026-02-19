@@ -1,8 +1,8 @@
 FROM quay.io/galaxy/docker-jupyter-notebook:25.12.1
 
-RUN conda install --yes \ 
-    bioblend galaxy-ie-helpers \
-    conda clean --all -y  && \
+RUN conda install --yes \
+    bioblend galaxy-ie-helpers && \
+    conda clean --all -y --force-pkgs-dirs && \
     fix-permissions /opt/conda
 
 RUN pip install jupytergis==0.13.2
