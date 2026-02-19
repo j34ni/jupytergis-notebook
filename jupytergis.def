@@ -1,33 +1,46 @@
 Bootstrap: docker
-From: jupyter/base-notebook:latest
-
-%labels
-    Maintainer jeani@nris.no
-
-%post
-    # Update Conda configuration and install mamba
-    /opt/conda/bin/conda config --add channels conda-forge \
-        && /opt/conda/bin/conda config --set always_yes yes \
-        && /opt/conda/bin/conda update -n base conda \
-        && /opt/conda/bin/conda install -n base mamba
-
-    # Install Python packages with mamba, pinning jupytergis=0.4.1
-    mamba install -y ipyleaflet jupyterlab jupytergis=0.4.1 geopandas \
-        && mamba clean --all -y
-
-    # Set permissions
-    chown -R 1000:100 /opt/conda/share/proj/ \
-        && chown -R 1000:100 /home/jovyan \
-        && chmod -R 755 /home/jovyan
-
-    # Remove notebook_config.py if it exists
-    rm -f /home/jovyan/.jupyter/notebook_config.py
-
-%files
-    start-notebook.sh /home/jovyan/start-notebook.sh
+From: quay.io/galaxy/docker-jupyter-notebook:25.12.1
 
 %environment
-    export HOME=/home/jovyan
+    export PATH="/opt/ollama/bin:${PATH}"
+
+%post
+    # Install python and jupyter packages
+    conda install --yes \
+        bioblend galaxy-ie-helpers \
+        qgis && \
+        conda clean --all -y && \
+        fix-permissions /opt/conda
+
+    pip install jupytergis==0.13.2 'jupyter-ai[all]'
+
+    # Set permissions for Jupyter and Galaxy mount points
+    chown -R $NB_USER:users /home/$NB_USER/ /import /export/ && \
+        chmod -R 777 /home/$NB_USER/ /import /export/
+
+    # Create a directory for Ollama
+    mkdir -p /opt/ollama/bin /opt/ollama/models && \
+        chown -R $NB_USER:users /opt/ollama
+
+    # Download and extract Ollama binary (amd64 assumed)
+    cd /opt/ollama && \
+        curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz && \
+        tar -xzf ollama-linux-amd64.tgz && \
+        rm ollama-linux-amd64.tgz
+
+    # Pre-pull the llama3.2 model
+    ollama serve & \
+        until curl -s http://localhost:11434/api/tags > /dev/null; do sleep 1; done && \
+        ollama pull llama3.2 && \
+        pkill ollama
+
+    # Make startup scripts executable
+    chmod +x /usr/local/bin/start-ollama.sh
+
+%files
+    jupyter_notebook_config.py /home/${NB_USER}/.jupyter/jupyter_notebook_config.py
+    jupyter_lab_config.py /home/${NB_USER}/.jupyter/jupyter_lab_config.py
+    start-ollama.sh /usr/local/bin/start-ollama.sh
 
 %runscript
-    exec /home/jovyan/start-notebook.sh
+    exec /startup.sh
